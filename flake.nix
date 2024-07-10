@@ -2,10 +2,12 @@
   description = "_Zaizen_ NixOS configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    
+        musnix  = { url = "github:musnix/musnix"; };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
+      
     };
   };
 
@@ -16,6 +18,7 @@
 
     pkgs = import nixpkgs {
       inherit system;
+    
       
       config = {
         allowUnfree = true;
@@ -25,9 +28,10 @@
   {
       nixosConfigurations = {
         anulo2Nixos = nixpkgs.lib.nixosSystem {
-          specialArgs = {inherit system;};
+          specialArgs = {inherit system; };
 
           modules = [
+   
             ./nixos/configuration.nix
           ];
         };

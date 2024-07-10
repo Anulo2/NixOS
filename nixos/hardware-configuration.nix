@@ -8,11 +8,12 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
+boot.supportedFilesystems = [ "ntfs" ];
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [config.boot.kernelPackages.nvidia_x11  ];
-  boot.kernelParams = [ "processor.max_cstate=4" "amd_iomu=soft" "idle=nomwait"];
+  boot.kernelParams = [ "processor.max_cstate=4" "amd_iomu=soft" "idle=nomwait"  "nvidia-drm.fbdev=1"];
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
 
@@ -53,10 +54,13 @@ hardware.bluetooth.enable = true; # enables support for Bluetooth
   };
 
 
+
+  hardware.graphics.enable32Bit = true;
+  hardware.graphics.enable = true;
  hardware.opengl = {
-    enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
+   # enable = true;
+   #  driSupport = true;
+   # driSupport32Bit = true;
   };
 services.xserver.videoDrivers = ["nvidia"];
 

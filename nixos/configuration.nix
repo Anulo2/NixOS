@@ -8,22 +8,28 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./musnix
     ];
 
 
   nixpkgs.config.allowUnfree = true;
-
-
+ 
+  musnix.enable = true;
   # Use the systemd-boot EFI boot loader.
   # boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.kernelParams = ["quiet"]; 
+ boot.plymouth.enable = true;
+ boot.plymouth.theme="breeze";
+ boot.initrd.systemd.enable = true;
 
    # grub
   boot.loader.grub = {
     enable = true;
     efiSupport = true;
     enableCryptodisk = true;
+    useOSProber = true;
     device = "nodev";
   };
 
@@ -34,13 +40,33 @@
 
   # Set your time zone.
   time.timeZone = "Europe/Rome";
+  time.hardwareClockInLocalTime = true;
+
+
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
+
+
+
   i18n.defaultLocale = "it_IT.UTF-8";
+i18n.extraLocaleSettings = {
+      LC_ADDRESS = "it_IT.UTF-8";
+      LC_IDENTIFICATION = "it_IT.UTF-8";
+      LC_MEASUREMENT = "it_IT.UTF-8";
+      LC_MONETARY = "it_IT.UTF-8";
+      LC_NAME = "it_IT.UTF-8";
+      LC_NUMERIC = "it_IT.UTF-8";
+      LC_PAPER = "it_IT.UTF-8";
+      LC_TELEPHONE = "it_IT.UTF-8";
+      LC_TIME = "it_IT.UTF-8";
+    };
+
+
+
   console = {
     font = "Lat2-Terminus16";
     keyMap = "it";
@@ -54,6 +80,8 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+
+  programs.xwayland.enable = true;
   
 
   # Configure keymap in X11
@@ -81,7 +109,7 @@ services.pipewire = {
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.anulo2 = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "docker" "tty" "audio"]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [
       firefox
       tree
@@ -101,8 +129,40 @@ services.pipewire = {
       libresprite
       zsh
       oh-my-zsh
+      element-desktop
+      wget
+      unzip
+      biome
+      obs-studio
+  signal-desktop
+      docker
+        docker-compose  
+        jellyfin-media-player
+        steam
+        tor-browser
+        arduino-ide
+        brave
+        ardour
+        reaper
     ];
   };
+
+  virtualisation.docker.enable = true;
+  virtualisation.docker.rootless = {
+  enable = true;
+  setSocketVariable = true;
+};
+
+    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+    programs.nix-ld.enable = true;
+     programs.nix-ld.libraries = with pkgs; [
+    zlib # numpy
+    libgcc  # sqlalchemy
+    # that's where the shared libs go, you can find which one you need using 
+    # nix-locate --top-level libstdc++.so.6  (replace this with your lib)
+    # ^ this requires `nix-index` pkg
+  ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -113,6 +173,7 @@ services.pipewire = {
 
   environment.systemPackages = [
     pkgs.home-manager
+    pkgs.nix-index
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
