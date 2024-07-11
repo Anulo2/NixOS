@@ -29,7 +29,7 @@
   {
       nixosConfigurations = {
         anulo2Nixos = nixpkgs.lib.nixosSystem {
-          specialArgs = {inherit system;};
+          inherit system;
 
           modules = [
             musnix.nixosModules.musnix
