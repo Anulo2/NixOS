@@ -32,6 +32,7 @@
           inherit system;
 
           modules = [
+            ({nixpkgs.config.allowUnfree = true;})
             musnix.nixosModules.musnix
             ./nixos/configuration.nix
           ];
