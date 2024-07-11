@@ -13,27 +13,18 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager,  inputs, ... }: 
-  
+  outputs = { self, nixpkgs, home-manager,  musnix, ... }:
   let 
     system = "x86_64-linux";
-
-    pkgs = import nixpkgs {
-      inherit system;
-      inherit inputs;
-      
-      config = {
-        allowUnfree = true;
-      };
-    };
-    in
+  in
   {
       nixosConfigurations = {
         anulo2Nixos = nixpkgs.lib.nixosSystem {
-          specialArgs = {inherit system;};
+          inherit system;
 
           modules = [
-              inputs.musnix.nixosModules.musnix
+            ({nixpkgs.config.allowUnfree = true;})
+            musnix.nixosModules.musnix
             ./nixos/configuration.nix
           ];
         };
